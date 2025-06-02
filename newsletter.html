@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Resources - MSFC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">MSFC</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="board.html">Board Members</a>
+            <a href="medical-info.html" class="active">Medical Resources</a>
+            <a href="newsletters.html">Newsletters</a>
+            <a href="#" id="adminLink" style="display: none;">Admin</a>
+        </div>
+        <div class="nav-auth">
+            <button id="loginBtn" class="btn">Admin Login</button>
+            <button id="logoutBtn" class="btn" style="display: none;">Logout</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="page-header">
+            <h1>Medical Resources</h1>
+            <p>Comprehensive resources for reproductive health education and advocacy.</p>
+        </section>
+
+        <section class="resources">
+            <div class="resource-section">
+                <h2>Reproductive Health</h2>
+                <p>Comprehensive information about reproductive health and family planning.</p>
+                <div class="resource-links">
+                    <a href="https://www.acog.org/" target="_blank" class="resource-card">
+                        <h3>ACOG Guidelines</h3>
+                        <p>American College of Obstetricians and Gynecologists guidelines and resources.</p>
+                    </a>
+                    <a href="https://www.guttmacher.org/" target="_blank" class="resource-card">
+                        <h3>Guttmacher Institute</h3>
+                        <p>Research and policy analysis on reproductive health.</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="resource-section">
+                <h2>Abortion Access</h2>
+                <p>Resources for understanding and accessing abortion care.</p>
+                <div class="resource-links">
+                    <a href="https://msfc.org/" target="_blank" class="resource-card">
+                        <h3>MSFC National</h3>
+                        <p>National organization resources and training materials.</p>
+                    </a>
+                    <a href="https://abortioncarenetwork.org/" target="_blank" class="resource-card">
+                        <h3>Abortion Care Network</h3>
+                        <p>Information about independent abortion care providers.</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="resource-section">
+                <h2>Advocacy Resources</h2>
+                <p>Tools and resources for reproductive health advocacy.</p>
+                <div class="resource-links">
+                    <a href="https://www.plannedparenthood.org/" target="_blank" class="resource-card">
+                        <h3>Planned Parenthood</h3>
+                        <p>Advocacy resources and educational materials.</p>
+                    </a>
+                    <a href="https://www.reproductiveaccess.org/" target="_blank" class="resource-card">
+                        <h3>Reproductive Health Access Project</h3>
+                        <p>Training and resources for healthcare providers.</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Admin Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
