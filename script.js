@@ -77,7 +77,18 @@ async function fileToBase64(file) {
 
 // Upload file to GitHub
 async function uploadToGitHub(path, content, message) {
+    console.log('Attempting to upload to GitHub...');
+    console.log('Repository:', GITHUB_REPO);
+    console.log('Path:', path);
+    
+    if (!GITHUB_TOKEN || GITHUB_TOKEN === 'TOKEN') {
+        console.error('GitHub token is not configured!');
+        alert('GitHub token is not configured. Please set up your GitHub token in script.js');
+        return null;
+    }
+
     try {
+        console.log('Making API request to GitHub...');
         const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
             method: 'PUT',
             headers: {
@@ -91,11 +102,17 @@ async function uploadToGitHub(path, content, message) {
             })
         });
 
+        console.log('GitHub API Response Status:', response.status);
+        
         if (!response.ok) {
-            throw new Error('Failed to upload to GitHub');
+            const errorData = await response.json();
+            console.error('GitHub API Error:', errorData);
+            throw new Error(`GitHub API Error: ${errorData.message || 'Unknown error'}`);
         }
 
-        return await response.json();
+        const result = await response.json();
+        console.log('Upload successful:', result);
+        return result;
     } catch (error) {
         console.error('Error uploading to GitHub:', error);
         throw error;
@@ -104,6 +121,55 @@ async function uploadToGitHub(path, content, message) {
 
 // Handle newsletter form submission
 if (newsletterForm) {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('pdfFile');
+
+    // Drag and drop functionality
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        dropZone.classList.add('highlight');
+    }
+
+    function unhighlight(e) {
+        dropZone.classList.remove('highlight');
+    }
+
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        fileInput.files = files;
+        updateFileName(files[0]);
+    }
+
+    function updateFileName(file) {
+        const fileNameDisplay = document.getElementById('fileName');
+        if (fileNameDisplay) {
+            fileNameDisplay.textContent = file ? file.name : 'No file selected';
+        }
+    }
+
+    fileInput.addEventListener('change', (e) => {
+        updateFileName(e.target.files[0]);
+    });
+
     newsletterForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -122,9 +188,24 @@ if (newsletterForm) {
             return;
         }
 
+        // Show loading state
+        const submitButton = newsletterForm.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.textContent;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Uploading...';
+
         try {
+            console.log('Starting newsletter upload process...');
+            console.log('File details:', {
+                name: pdfFile.name,
+                size: pdfFile.size,
+                type: pdfFile.type
+            });
+
             // Convert PDF to base64
+            console.log('Converting PDF to base64...');
             const pdfBase64 = await fileToBase64(pdfFile);
+            console.log('PDF converted successfully');
             
             // Create newsletter metadata
             const newsletter = {
@@ -135,13 +216,19 @@ if (newsletterForm) {
                 filename: `newsletters/${Date.now()}-${pdfFile.name}`
             };
 
+            console.log('Uploading PDF file to GitHub...');
             // Upload PDF to GitHub
-            await uploadToGitHub(
+            const uploadResult = await uploadToGitHub(
                 newsletter.filename,
                 pdfBase64,
                 `Add newsletter: ${title}`
             );
 
+            if (!uploadResult) {
+                throw new Error('Failed to upload PDF file');
+            }
+
+            console.log('PDF uploaded successfully, updating newsletters list...');
             // Get existing newsletters
             const newslettersResponse = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/newsletters.json`);
             let newsletters = [];
@@ -150,23 +237,43 @@ if (newsletterForm) {
                 const data = await newslettersResponse.json();
                 const content = atob(data.content);
                 newsletters = JSON.parse(content);
+                console.log('Retrieved existing newsletters:', newsletters.length);
+            } else {
+                console.log('No existing newsletters found, creating new list');
             }
 
             // Add new newsletter
             newsletters.unshift(newsletter);
 
+            console.log('Updating newsletters.json...');
             // Update newsletters.json
-            await uploadToGitHub(
+            const updateResult = await uploadToGitHub(
                 'newsletters.json',
                 btoa(JSON.stringify(newsletters, null, 2)),
                 `Update newsletters list: ${title}`
             );
 
+            if (!updateResult) {
+                throw new Error('Failed to update newsletters list');
+            }
+
+            console.log('Newsletter upload process completed successfully');
+            // Show success message
+            alert('Newsletter uploaded successfully!');
+            
+            // Reset form
+            newsletterForm.reset();
+            updateFileName(null);
+
             // Redirect to newsletters page
             window.location.href = 'newsletters.html';
         } catch (error) {
-            console.error('Error uploading newsletter:', error);
-            alert('Failed to upload newsletter. Please try again.');
+            console.error('Error in newsletter upload process:', error);
+            alert(`Failed to upload newsletter: ${error.message}`);
+        } finally {
+            // Reset button state
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
         }
     });
 }
