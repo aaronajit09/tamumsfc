@@ -242,21 +242,47 @@ body {
 }
 
 .file-upload {
-    border: 2px dashed #D1D5DB;
-    padding: 2rem;
+    border: 2px dashed #ccc;
+    border-radius: 4px;
+    padding: 20px;
     text-align: center;
-    border-radius: 0.375rem;
     cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.file-upload:hover {
+    border-color: #666;
+}
+
+.file-upload.highlight {
+    border-color: #4CAF50;
+    background-color: rgba(76, 175, 80, 0.1);
 }
 
 .file-upload input[type="file"] {
-    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-upload-placeholder {
+    color: #666;
+}
+
+.file-name {
+    margin: 10px 0;
+    font-weight: bold;
+    color: #333;
 }
 
 .file-size {
-    font-size: 0.875rem;
-    color: #6B7280;
-    margin-top: 0.5rem;
+    font-size: 0.9em;
+    color: #888;
 }
 
 /* Modal */
