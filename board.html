@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Members - MSFC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">MSFC</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="board.html" class="active">Board Members</a>
+            <a href="medical-info.html">Medical Resources</a>
+            <a href="newsletters.html">Newsletters</a>
+            <a href="#" id="adminLink" style="display: none;">Admin</a>
+        </div>
+        <div class="nav-auth">
+            <button id="loginBtn" class="btn">Admin Login</button>
+            <button id="logoutBtn" class="btn" style="display: none;">Logout</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="page-header">
+            <h1>Board Members</h1>
+            <p>Meet our dedicated team of board members working to advance reproductive health education.</p>
+        </section>
+
+        <section class="board-members">
+            <div class="board-card">
+                <div class="board-image">
+                    <img src="https://via.placeholder.com/300x300" alt="Jane Doe">
+                </div>
+                <div class="board-info">
+                    <h2>Jane Doe</h2>
+                    <p class="role">President</p>
+                    <p class="bio">Medical student passionate about reproductive health advocacy.</p>
+                </div>
+            </div>
+
+            <div class="board-card">
+                <div class="board-image">
+                    <img src="https://via.placeholder.com/300x300" alt="John Smith">
+                </div>
+                <div class="board-info">
+                    <h2>John Smith</h2>
+                    <p class="role">Vice President</p>
+                    <p class="bio">Dedicated to expanding access to reproductive healthcare.</p>
+                </div>
+            </div>
+
+            <div class="board-card">
+                <div class="board-image">
+                    <img src="https://via.placeholder.com/300x300" alt="Sarah Johnson">
+                </div>
+                <div class="board-info">
+                    <h2>Sarah Johnson</h2>
+                    <p class="role">Secretary</p>
+                    <p class="bio">Advocating for comprehensive reproductive health education.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Admin Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
