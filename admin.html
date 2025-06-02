@@ -47,10 +47,11 @@
 
                 <div class="form-group">
                     <label for="pdfFile">PDF File:</label>
-                    <div class="file-upload">
+                    <div id="dropZone" class="file-upload">
                         <input type="file" id="pdfFile" accept=".pdf" required>
                         <div class="file-upload-placeholder">
                             <p>Drag and drop a PDF file here or click to browse</p>
+                            <p id="fileName" class="file-name">No file selected</p>
                             <p class="file-size">Maximum file size: 10MB</p>
                         </div>
                     </div>
