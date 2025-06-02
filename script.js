@@ -1,6 +1,6 @@
 // Admin password (in a real app, this would be handled server-side)
 const ADMIN_PASSWORD = 'msfc2024';
-const GITHUB_TOKEN = 'process.env.GITHUB_TOKEN'; // You'll need to add your GitHub token here
+const GITHUB_TOKEN = 'TOKEN'; // You'll need to add your GitHub token here
 const GITHUB_REPO = ''; // Format: 'username/repo'
 const GITHUB_BRANCH = 'main';
 
