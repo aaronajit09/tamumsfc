@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSFC - Medical Students for Choice</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">MSFC</div>
+        <div class="nav-links">
+            <a href="index.html" class="active">Home</a>
+            <a href="board.html">Board Members</a>
+            <a href="medical-info.html">Medical Resources</a>
+            <a href="newsletters.html">Newsletters</a>
+            <a href="#" id="adminLink" style="display: none;">Admin</a>
+        </div>
+        <div class="nav-auth">
+            <button id="loginBtn" class="btn">Admin Login</button>
+            <button id="logoutBtn" class="btn" style="display: none;">Logout</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Welcome to MSFC</h1>
+            <p>Supporting medical students in advocating for reproductive health and abortion access.</p>
+        </section>
+
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h2>Board Members</h2>
+                <p>Meet our dedicated team of board members working to advance reproductive health education.</p>
+                <a href="board.html" class="btn">Learn More</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🏥</div>
+                <h2>Medical Resources</h2>
+                <p>Access comprehensive resources on reproductive health and abortion care.</p>
+                <a href="medical-info.html" class="btn">View Resources</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📰</div>
+                <h2>Newsletters</h2>
+                <p>Stay updated with our latest news, events, and resources.</p>
+                <a href="newsletters.html" class="btn">Read Newsletters</a>
+            </div>
+        </section>
+    </main>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Admin Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
