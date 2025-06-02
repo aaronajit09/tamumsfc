@@ -1,6 +1,6 @@
 // Admin password (in a real app, this would be handled server-side)
 const ADMIN_PASSWORD = 'msfc2024';
-const GITHUB_TOKEN = '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'; // You'll need to add your GitHub token here
+const GITHUB_TOKEN = 'TOKEN'; // You'll need to add your GitHub token here
 const GITHUB_REPO = 'aaronajit09/tamumsfc'; // Format: 'username/repo'
 const GITHUB_BRANCH = 'main';
 
