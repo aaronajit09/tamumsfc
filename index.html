@@ -52,6 +52,18 @@
         </section>
     </main>
 
+    <section class="subscription-form">
+        <h2>Subscribe to Our Newsletter</h2>
+        <p>Get notified when we publish new newsletters.</p>
+        <form id="subscriptionForm">
+            <div class="form-group">
+                <input type="email" id="subscriberEmail" required placeholder="Enter your email address">
+                <button type="submit" class="btn">Subscribe</button>
+            </div>
+            <p id="subscriptionMessage" class="subscription-message"></p>
+        </form>
+    </section>
+
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -66,7 +78,8 @@
         </div>
     </div>
 
-    <script src="env.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html> 
