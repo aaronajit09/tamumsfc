@@ -188,6 +188,7 @@ if (newsletterForm) {
         try {
             // Upload PDF to Supabase Storage
             const fileName = `${Date.now()}-${pdfFile.name}`;
+            console.log('Uploading file with name:', fileName);
             const { data: uploadData, error: uploadError } = await supabase.storage
                 .from('newsletters')
                 .upload(fileName, pdfFile);
@@ -198,6 +199,7 @@ if (newsletterForm) {
             const { data: { publicUrl } } = supabase.storage
                 .from('newsletters')
                 .getPublicUrl(fileName);
+            console.log('Generated public URL:', publicUrl);
 
             // Create newsletter record in Supabase database
             const { error: dbError } = await supabase
@@ -273,4 +275,65 @@ async function displayNewsletters() {
 
 // Initialize
 updateUI();
-displayNewsletters(); 
+displayNewsletters();
+
+// Handle newsletter subscription
+const subscriptionForm = document.getElementById('subscriptionForm');
+if (subscriptionForm) {
+    subscriptionForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const emailInput = document.getElementById('subscriberEmail');
+        const messageElement = document.getElementById('subscriptionMessage');
+        const email = emailInput.value.trim();
+        
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            messageElement.textContent = 'Please enter a valid email address.';
+            messageElement.className = 'subscription-message error';
+            return;
+        }
+
+        try {
+            // Check if email already exists
+            const { data: existingSubscriber, error: checkError } = await supabase
+                .from('subscribers')
+                .select('email')
+                .eq('email', email)
+                .single();
+
+            if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+                throw checkError;
+            }
+
+            if (existingSubscriber) {
+                messageElement.textContent = 'You are already subscribed to our newsletter!';
+                messageElement.className = 'subscription-message error';
+                return;
+            }
+
+            // Insert new subscriber
+            const { error: insertError } = await supabase
+                .from('subscribers')
+                .insert([
+                    {
+                        email,
+                        // subscribed_at: new Date().toISOString()
+                    }
+                ]);
+
+            if (insertError) throw insertError;
+
+            // Show success message
+            messageElement.textContent = 'Thank you for subscribing to our newsletter!';
+            messageElement.className = 'subscription-message success';
+            emailInput.value = '';
+
+        } catch (error) {
+            console.error('Error in subscription process:', error);
+            messageElement.textContent = 'Failed to subscribe. Please try again later.';
+            messageElement.className = 'subscription-message error';
+        }
+    });
+} 
