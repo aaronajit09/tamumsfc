@@ -299,19 +299,25 @@ body {
 
 .modal-content {
     background-color: white;
+    margin: 15% auto;
     padding: 2rem;
     border-radius: 0.5rem;
     max-width: 400px;
-    margin: 2rem auto;
     position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .close {
     position: absolute;
-    top: 1rem;
     right: 1rem;
+    top: 1rem;
     font-size: 1.5rem;
     cursor: pointer;
+    color: #666;
+}
+
+.close:hover {
+    color: #333;
 }
 
 /* Responsive design */
