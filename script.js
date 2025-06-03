@@ -1,8 +1,10 @@
 // Admin password (in a real app, this would be handled server-side)
 const ADMIN_PASSWORD = 'msfc2024';
-const GITHUB_TOKEN = 'TOKEN'; // You'll need to add your GitHub token here
-const GITHUB_REPO = 'aaronajit09/tamumsfc'; // Format: 'username/repo'
-const GITHUB_BRANCH = 'main';
+
+// Supabase configuration
+const supabaseUrl = 'https://diedcgshhudtpbnfbdmy.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpZWRjZ3NoaHVkdHBibmZiZG15Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5MDUyMDUsImV4cCI6MjA2NDQ4MTIwNX0.lzOZ8zp2D2MFv9u-OHw3hoodyfX8CjCqx1SVyGfcoNk';
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 // DOM Elements
 const loginBtn = document.getElementById('loginBtn');
@@ -14,6 +16,17 @@ const closeModal = document.querySelector('.close');
 const adminControls = document.getElementById('adminControls');
 const newslettersList = document.getElementById('newslettersList');
 const newsletterForm = document.getElementById('newsletterForm');
+const fileInput = document.getElementById('pdfFile');
+
+// Debug logs
+console.log('Supabase client:', supabase);
+console.log('DOM Elements:', {
+    loginBtn,
+    loginModal,
+    loginForm,
+    closeModal,
+    fileInput
+});
 
 // Check if user is logged in
 function isLoggedIn() {
@@ -36,88 +49,60 @@ function updateUI() {
 }
 
 // Show login modal
-loginBtn.addEventListener('click', () => {
-    loginModal.style.display = 'block';
-});
+if (loginBtn) {
+    console.log('Login button found, adding click listener');
+    loginBtn.addEventListener('click', () => {
+        console.log('Login button clicked');
+        if (loginModal) {
+            console.log('Showing modal');
+            loginModal.style.display = 'block';
+        } else {
+            console.log('Modal element not found');
+        }
+    });
+} else {
+    console.log('Login button not found');
+}
 
 // Close login modal
-closeModal.addEventListener('click', () => {
-    loginModal.style.display = 'none';
+if (closeModal) {
+    closeModal.addEventListener('click', () => {
+        if (loginModal) {
+            loginModal.style.display = 'none';
+        }
+    });
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', (e) => {
+    if (e.target === loginModal) {
+        loginModal.style.display = 'none';
+    }
 });
 
 // Handle login form submission
-loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const password = document.getElementById('password').value;
-    
-    if (password === ADMIN_PASSWORD) {
-        localStorage.setItem('isAdmin', 'true');
-        loginModal.style.display = 'none';
-        updateUI();
-    } else {
-        alert('Invalid password');
-    }
-});
+if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const password = document.getElementById('password').value;
+        
+        if (password === ADMIN_PASSWORD) {
+            localStorage.setItem('isAdmin', 'true');
+            if (loginModal) {
+                loginModal.style.display = 'none';
+            }
+            updateUI();
+        } else {
+            alert('Invalid password');
+        }
+    });
+}
 
 // Handle logout
 logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('isAdmin');
     updateUI();
 });
-
-// Convert file to base64
-async function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = error => reject(error);
-    });
-}
-
-// Upload file to GitHub
-async function uploadToGitHub(path, content, message) {
-    console.log('Attempting to upload to GitHub...');
-    console.log('Repository:', GITHUB_REPO);
-    console.log('Path:', path);
-    
-    if (!GITHUB_TOKEN || GITHUB_TOKEN === 'TOKEN') {
-        console.error('GitHub token is not configured!');
-        alert('GitHub token is not configured. Please set up your GitHub token in script.js');
-        return null;
-    }
-
-    try {
-        console.log('Making API request to GitHub...');
-        const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `token ${GITHUB_TOKEN}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                message,
-                content,
-                branch: GITHUB_BRANCH
-            })
-        });
-
-        console.log('GitHub API Response Status:', response.status);
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('GitHub API Error:', errorData);
-            throw new Error(`GitHub API Error: ${errorData.message || 'Unknown error'}`);
-        }
-
-        const result = await response.json();
-        console.log('Upload successful:', result);
-        return result;
-    } catch (error) {
-        console.error('Error uploading to GitHub:', error);
-        throw error;
-    }
-}
 
 // Handle newsletter form submission
 if (newsletterForm) {
@@ -166,9 +151,15 @@ if (newsletterForm) {
         }
     }
 
-    fileInput.addEventListener('change', (e) => {
-        updateFileName(e.target.files[0]);
-    });
+    if (fileInput) {
+        console.log('File input found, adding change listener');
+        fileInput.addEventListener('change', (e) => {
+            console.log('File input change event fired', e.target.files[0]);
+            updateFileName(e.target.files[0]);
+        });
+    } else {
+        console.log('File input element with ID "pdfFile" not found.');
+    }
 
     newsletterForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -195,69 +186,34 @@ if (newsletterForm) {
         submitButton.textContent = 'Uploading...';
 
         try {
-            console.log('Starting newsletter upload process...');
-            console.log('File details:', {
-                name: pdfFile.name,
-                size: pdfFile.size,
-                type: pdfFile.type
-            });
+            // Upload PDF to Supabase Storage
+            const fileName = `${Date.now()}-${pdfFile.name}`;
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('newsletters')
+                .upload(fileName, pdfFile);
 
-            // Convert PDF to base64
-            console.log('Converting PDF to base64...');
-            const pdfBase64 = await fileToBase64(pdfFile);
-            console.log('PDF converted successfully');
-            
-            // Create newsletter metadata
-            const newsletter = {
-                id: Date.now(),
-                title,
-                date,
-                preview,
-                filename: `newsletters/${Date.now()}-${pdfFile.name}`
-            };
+            if (uploadError) throw uploadError;
 
-            console.log('Uploading PDF file to GitHub...');
-            // Upload PDF to GitHub
-            const uploadResult = await uploadToGitHub(
-                newsletter.filename,
-                pdfBase64,
-                `Add newsletter: ${title}`
-            );
+            // Get the public URL for the uploaded file
+            const { data: { publicUrl } } = supabase.storage
+                .from('newsletters')
+                .getPublicUrl(fileName);
 
-            if (!uploadResult) {
-                throw new Error('Failed to upload PDF file');
-            }
+            // Create newsletter record in Supabase database
+            const { error: dbError } = await supabase
+                .from('newsletters')
+                .insert([
+                    {
+                        title,
+                        date,
+                        preview,
+                        pdf_url: publicUrl,
+                        created_at: new Date().toISOString()
+                    }
+                ]);
 
-            console.log('PDF uploaded successfully, updating newsletters list...');
-            // Get existing newsletters
-            const newslettersResponse = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/newsletters.json`);
-            let newsletters = [];
-            
-            if (newslettersResponse.ok) {
-                const data = await newslettersResponse.json();
-                const content = atob(data.content);
-                newsletters = JSON.parse(content);
-                console.log('Retrieved existing newsletters:', newsletters.length);
-            } else {
-                console.log('No existing newsletters found, creating new list');
-            }
+            if (dbError) throw dbError;
 
-            // Add new newsletter
-            newsletters.unshift(newsletter);
-
-            console.log('Updating newsletters.json...');
-            // Update newsletters.json
-            const updateResult = await uploadToGitHub(
-                'newsletters.json',
-                btoa(JSON.stringify(newsletters, null, 2)),
-                `Update newsletters list: ${title}`
-            );
-
-            if (!updateResult) {
-                throw new Error('Failed to update newsletters list');
-            }
-
-            console.log('Newsletter upload process completed successfully');
             // Show success message
             alert('Newsletter uploaded successfully!');
             
@@ -269,7 +225,7 @@ if (newsletterForm) {
             window.location.href = 'newsletters.html';
         } catch (error) {
             console.error('Error in newsletter upload process:', error);
-            alert(`Failed to upload newsletter: ${error.message}`);
+            alert('Failed to upload newsletter. Error: ' + (error.message || error));
         } finally {
             // Reset button state
             submitButton.disabled = false;
@@ -283,17 +239,14 @@ async function displayNewsletters() {
     if (!newslettersList) return;
     
     try {
-        const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/newsletters.json`);
-        
-        if (!response.ok) {
-            throw new Error('Failed to fetch newsletters');
-        }
+        const { data: newsletters, error } = await supabase
+            .from('newsletters')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-        const data = await response.json();
-        const content = atob(data.content);
-        const newsletters = JSON.parse(content);
+        if (error) throw error;
         
-        if (newsletters.length === 0) {
+        if (!newsletters || newsletters.length === 0) {
             newslettersList.innerHTML = '<p class="no-newsletters">No newsletters available yet.</p>';
             return;
         }
@@ -309,7 +262,7 @@ async function displayNewsletters() {
                     })}</p>
                     <p class="preview">${newsletter.preview}</p>
                 </div>
-                <a href="https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${newsletter.filename}" target="_blank" class="btn">View PDF</a>
+                <a href="${newsletter.pdf_url}" target="_blank" class="btn">View PDF</a>
             </div>
         `).join('');
     } catch (error) {
